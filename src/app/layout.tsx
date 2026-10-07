@@ -6,7 +6,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Separator } from "@/components/ui/separator";
 import { Analytics } from "@vercel/analytics/next";
-import { SITE_DESCRIPTION } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -22,9 +22,10 @@ const bricolage = Bricolage_Grotesque({
 const description = SITE_DESCRIPTION;
 
 export const metadata: Metadata = {
+  metadataBase: SITE_URL,
   title: "Quairy",
   description,
-  // Relative URLs resolve against the deployment's URL on Vercel.
+  // Relative URLs, such as the card image, resolve against metadataBase.
   openGraph: { siteName: "Quairy", title: "Quairy", description, images: "/card" },
   twitter: { card: "summary_large_image", title: "Quairy", description, images: "/card" },
 };
