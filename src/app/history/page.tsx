@@ -18,7 +18,7 @@ import { getHistory, getTimePreferences } from "@/lib/quota";
 import { clearSearchHistory } from "./actions";
 import { RememberTimePreferences, SearchTime } from "@/components/TimePreferences";
 
-export const metadata: Metadata = { title: "Search history – Quairy" };
+export const metadata: Metadata = { title: "Search history – Quairy", robots: { index: false } };
 
 function Notice({ title, description, action }: { title: string; description: string; action: React.ReactNode }) {
   return (

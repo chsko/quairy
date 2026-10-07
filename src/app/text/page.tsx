@@ -3,6 +3,7 @@ import { PageTransition } from "@/components/Transitions";
 import { TextAsk } from "./TextAsk";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/text" },
   title: "Ask about a text – Quairy",
   description:
     "Paste a text and ask a yes/no, pick-one or rating question. Quairy answers only from your text and shows where.",

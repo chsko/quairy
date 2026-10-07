@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/empty";
 import { getStripe, isPro, syncSubscription } from "@/lib/billing";
 
-export const metadata: Metadata = { title: "Welcome to Quairy Pro" };
+export const metadata: Metadata = { title: "Welcome to Quairy Pro", robots: { index: false } };
 
 /**
  * Where Stripe Checkout returns. Webhooks keep subscriptions up to date, but

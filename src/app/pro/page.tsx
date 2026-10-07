@@ -8,7 +8,12 @@ import { PRO_OPEN } from "@/lib/launch";
 import { subscribe } from "./actions";
 import { Plans, SUBSCRIBE_FORM } from "./Plans";
 
-export const metadata: Metadata = { title: "Quairy Pro" };
+export const metadata: Metadata = {
+  title: "Quairy Pro",
+  description:
+    "Unlimited searches, comparisons and questions about your own texts, plus search history. Coming soon.",
+  alternates: { canonical: "/pro" },
+};
 
 const date = new Intl.DateTimeFormat("en", { dateStyle: "long" });
 

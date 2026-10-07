@@ -31,7 +31,11 @@ async function readQuery(searchParams: Props["searchParams"]) {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const q = await readQuery(searchParams);
-  return { title: q ? `Compare: ${q} – Quairy` : "Compare – Quairy" };
+  // Like search results, comparisons stay out of search engines.
+  return {
+    title: q ? `Compare: ${q} – Quairy` : "Compare – Quairy",
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function ComparePage({ searchParams }: Props) {

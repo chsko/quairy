@@ -26,6 +26,13 @@ export const metadata: Metadata = {
   metadataBase: SITE_URL,
   title: "Quairy",
   description,
+  applicationName: "Quairy",
+  // Only production belongs in search engines; previews and local runs stay out.
+  robots: process.env.VERCEL_ENV === "production" ? undefined : { index: false, follow: false },
+  // Google Search Console's HTML-tag verification, when its token is set.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   // Relative URLs, such as the card image, resolve against metadataBase.
   openGraph: { siteName: "Quairy", title: "Quairy", description, images: "/card" },
   twitter: { card: "summary_large_image", title: "Quairy", description, images: "/card" },

@@ -10,7 +10,7 @@ import { getTimePreferences } from "@/lib/quota";
 import { Profile } from "../Profile";
 import { SubscriptionSettings } from "../Subscription";
 
-export const metadata: Metadata = { title: "Settings – Quairy" };
+export const metadata: Metadata = { title: "Settings – Quairy", robots: { index: false } };
 
 /** A heading like the ones on Clerk's own pages. */
 function PageTitle({ children }: { children: React.ReactNode }) {

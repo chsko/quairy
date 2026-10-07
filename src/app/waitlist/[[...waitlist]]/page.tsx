@@ -4,6 +4,7 @@ import { Waitlist } from "@clerk/nextjs";
 import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/waitlist" },
   title: "Join the waitlist – Quairy",
   description: "Accounts and Quairy Pro are coming soon. Join the waitlist to hear when they open.",
 };

@@ -20,9 +20,15 @@ async function readQuery(searchParams: Props["searchParams"]) {
   return (Array.isArray(q) ? q[0] : q)?.trim() ?? "";
 }
 
+/**
+ * Search results stay out of search engines: they're endless, made on demand
+ * (each crawl would ask Jev), and thin on their own. Links in them can be followed.
+ */
+const NOT_INDEXED = { index: false, follow: true } as const;
+
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const q = await readQuery(searchParams);
-  if (!q || q.length > MAX_QUERY_LENGTH) return { title: "Quairy" };
+  if (!q || q.length > MAX_QUERY_LENGTH) return { title: "Quairy", robots: NOT_INDEXED };
 
   // Link previews show the answer: the description here, and the card image,
   // which /card renders from the same question.
@@ -44,6 +50,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const image = { url: `/card?${new URLSearchParams({ q })}`, width: 1200, height: 630, alt: title };
   return {
     title,
+    robots: NOT_INDEXED,
     description,
     openGraph: { siteName: "Quairy", title, description, images: [image] },
     twitter: { card: "summary_large_image", title, description, images: [image] },

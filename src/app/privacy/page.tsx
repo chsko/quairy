@@ -4,7 +4,8 @@ import { Email, LegalPage, List, OperatorDetails, Section } from "@/components/L
 import { PRIVACY_UPDATED } from "@/lib/legal";
 import { HISTORY_SIZE } from "@/lib/pricing";
 
-export const metadata: Metadata = { title: "Privacy policy – Quairy" };
+export const metadata: Metadata = {
+  alternates: { canonical: "/privacy" }, title: "Privacy policy – Quairy" };
 
 const link = "font-medium underline underline-offset-4";
 

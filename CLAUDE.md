@@ -134,6 +134,15 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
 - Integrations are provisioned through the Vercel Marketplace (Clerk, Stripe, Upstash); env vars
   come from `vercel env pull`. Production Clerk needs DNS records for the domain.
 
+## SEO
+
+- `src/app/robots.ts` and `src/app/sitemap.ts` (public pages only). Only production is indexable:
+  robots.txt and the root `robots` metadata shut out previews and local runs. Account and private
+  pages are `noindex`; search results and comparisons are `noindex, follow` (endless, made on
+  demand, and every crawl would ask Jev), so keep them out of the sitemap. The home page carries
+  WebSite (with a SearchAction for `/search?q=`) and WebApplication JSON-LD (`JsonLd`), and public
+  pages set `alternates.canonical`. `GOOGLE_SITE_VERIFICATION` adds Search Console's meta tag.
+
 ## Deployment
 
 Quairy deploys to Vercel. Use the `vercel` plugin (enabled in `.claude/settings.json`) for

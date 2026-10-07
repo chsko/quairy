@@ -6,7 +6,43 @@ import { Logo } from "@/components/Logo";
 import { SearchBox } from "@/components/SearchBox";
 import { Button } from "@/components/ui/button";
 import { NAV_FORWARD, PageTransition } from "@/components/Transitions";
+import type { Metadata } from "next";
+import { JsonLd } from "@/components/JsonLd";
 import { EXAMPLES } from "@/lib/examples";
+import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: { absolute: "Quairy – ask a question, see how sure the answer is" },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+};
+
+/** What Quairy is, for search engines: a site with a search box, and a free web app. */
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "Quairy",
+      url: SITE_URL.toString(),
+      description: SITE_DESCRIPTION,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: `${new URL("/search", SITE_URL)}?q={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "WebApplication",
+      name: "Quairy",
+      url: SITE_URL.toString(),
+      applicationCategory: "SearchApplication",
+      operatingSystem: "Any",
+      description: SITE_DESCRIPTION,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    },
+  ],
+};
 
 export default function Home() {
   return (
@@ -17,7 +53,8 @@ export default function Home() {
         <Account />
       </div>
       <main id="main" className="flex flex-1 flex-col items-center px-4 pt-[10vh] pb-16">
-        <h1 className="sr-only">Quairy</h1>
+        <JsonLd data={STRUCTURED_DATA} />
+        <h1 className="sr-only">Quairy: ask a yes/no, pick-one or rating question and see how sure the answer is</h1>
         <Logo className="h-16 sm:h-24" />
         <p className="mt-5 max-w-md text-center text-balance text-muted-foreground">
           Ask a question. Quairy finds the answer and shows how sure it is.

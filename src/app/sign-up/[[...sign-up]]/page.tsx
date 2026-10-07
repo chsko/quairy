@@ -5,7 +5,7 @@ import { SignUp } from "@clerk/nextjs";
 import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 import { SIGNUPS_OPEN } from "@/lib/launch";
 
-export const metadata: Metadata = { title: "Create your account – Quairy" };
+export const metadata: Metadata = { title: "Create your account – Quairy", robots: { index: false } };
 
 /** Prebuilt: the page is the same for everyone. Clerk's later steps render on demand. */
 export function generateStaticParams() {

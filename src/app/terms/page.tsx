@@ -9,7 +9,8 @@ import {
   PRO_YEARLY_EUR,
 } from "@/lib/pricing";
 
-export const metadata: Metadata = { title: "Terms of service – Quairy" };
+export const metadata: Metadata = {
+  alternates: { canonical: "/terms" }, title: "Terms of service – Quairy" };
 
 const link = "font-medium underline underline-offset-4";
 

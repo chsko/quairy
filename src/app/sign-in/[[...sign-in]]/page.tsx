@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
 import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 
-export const metadata: Metadata = { title: "Sign in – Quairy" };
+export const metadata: Metadata = { title: "Sign in – Quairy", robots: { index: false } };
 
 /** Prebuilt: the page is the same for everyone. Clerk's later steps render on demand. */
 export function generateStaticParams() {
