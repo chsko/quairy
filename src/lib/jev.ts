@@ -165,7 +165,7 @@ export interface JevClient {
  * the same request ask whether the text answers the query and which passage
  * does (TypeSafe's line-by-line search pattern).
  */
-export function buildRequest(query: string, passages?: string[]) {
+export function buildRequest(query: string, passages?: string[], kind?: SupportedKind) {
   const options = extractOptions(query);
   const scale = extractScale(query);
   const basis = passages
@@ -217,7 +217,7 @@ export function buildRequest(query: string, passages?: string[]) {
     state: passages ? { query, document: tagPassages(passages) } : { query },
     questions,
   };
-  return { request, options, scale, passages };
+  return { request, options, scale, passages, kind };
 }
 
 function isType<T extends Question["type"]>(
@@ -239,7 +239,9 @@ export function interpret(
   }
   const kinds = kindAnswer as ChoiceResponse<typeof KIND_CRITERIA>;
   const classification: Classification = {
-    kind: kinds.choice,
+    // A known kind (re-asking a search from web sources) keeps the answer
+    // comparable with the search's.
+    kind: built.kind ?? kinds.choice,
     confidence: kinds.confidence,
     probabilities: { ...kinds.probabilities },
   };
@@ -347,14 +349,16 @@ function evidenceFrom(passages: string[], probabilities: Record<string, number>)
 
 /**
  * Classifies and answers a query with a single Jev request, from general
- * knowledge or, given `passages`, from that text alone.
+ * knowledge or, given `passages`, from that text alone. `kind` overrides the
+ * classification when it is already known.
  */
 export async function askJev(
   client: JevClient,
   query: string,
   passages?: string[],
+  kind?: SupportedKind,
 ): Promise<Outcome> {
-  const built = buildRequest(query, passages);
+  const built = buildRequest(query, passages, kind);
   const result = await client.systemOne(built.request);
   return interpret(built, result);
 }

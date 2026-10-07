@@ -37,7 +37,7 @@ function FreePlan({ ended }: { ended: boolean }) {
         <p className="font-display text-xl font-semibold">Free</p>
         <p className="text-sm text-muted-foreground">
           {ended ? "Your Pro subscription has ended. " : ""}
-          {FREE_DAILY_SEARCHES} searches and {FREE_DAILY_EXTRAS} comparisons or text questions a day.
+          {FREE_DAILY_SEARCHES} searches and {FREE_DAILY_EXTRAS} comparisons, text questions or source checks a day.
         </p>
       </div>
       <Button asChild className="w-fit rounded-full">

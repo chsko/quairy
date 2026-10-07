@@ -117,7 +117,7 @@ export function Plans({
             <Perks
               items={[
                 `${FREE_DAILY_SEARCHES} searches a day`,
-                `${FREE_DAILY_EXTRAS} comparisons or text questions a day`,
+                `${FREE_DAILY_EXTRAS} comparisons, text questions or source checks a day`,
                 "No account needed",
               ]}
             />
@@ -151,7 +151,7 @@ export function Plans({
             <Perks
               items={[
                 "Unlimited searches",
-                "Unlimited comparisons and text questions",
+                "Unlimited comparisons, text questions and source checks",
                 "Search history",
                 "Cancel any time",
               ]}

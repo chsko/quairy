@@ -61,6 +61,13 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
   get "Nothing to compare here". Never pad the suggested qualities with irrelevant ones;
   fewer than two relevant qualities means "no factors".
 
+- "Check the sources" (`SourceCheck` under a web answer, server action in `src/app/search/actions.ts`,
+  `src/lib/sources.ts`) runs only when clicked: Exa (Vercel Marketplace integration, `EXA_API_KEY`;
+  the button is hidden without it) finds up to 6 pages, their highlights become passages, and
+  `askJev` answers again from them alone with the search's kind (`kind` overrides the
+  classification), as in "Ask about a text". `agreement` (`src/lib/agreement.ts`) badges whether
+  the sources agree with the general-knowledge answer. Checks are cached in Redis for a day per
+  question hash (`sources:<kind>:<hash>`) and count against the extras allowance.
 - Sharing: search pages carry the answer in their metadata, and `/card?q=…`
   (`src/app/card/route.tsx`, `next/og`) renders the preview image (a brand card without `q`, for
   unsupported questions, or on errors). `search` (`src/lib/search.ts`) is wrapped in React
@@ -85,7 +92,7 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
   counted). Only link-preview bots get the answer in a search page's metadata: metadata
   also runs when a link to the page is prefetched (home examples, history), and that must never
   ask Jev, count a search or restamp history. Compare and "Ask about a text"
-  cost up to 10x a search, so they share their own allowance, `FREE_DAILY_EXTRAS` (3) a day
+  cost up to 10x a search, so they share their own allowance with source checks, `FREE_DAILY_EXTRAS` (3) a day
   (`checkExtra`; repeating the same comparison or question on the same text is free).
   Every Jev entry point (search, `/card`, `/text`, Compare) passes `checkBurst` (30/min per IP).
 - Pro (`src/lib/pricing.ts`, €4/month or €30/year, one Stripe product with a price per interval,
@@ -113,7 +120,7 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
 - Legal: `/terms` and `/privacy` (`src/components/LegalPage.tsx`), linked from the footer, sign-up
   (a footnote) and the Pro card. Who runs Quairy (`OPERATOR`) and the "last updated" dates live in
   `src/lib/legal.ts`; keep the pages true to what the code stores and who processes it (Vercel,
-  Clerk, Stripe, Upstash, TypeSafe), and update the date when they change in substance. Checkout
+  Clerk, Stripe, Upstash, TypeSafe, Exa), and update the date when they change in substance. Checkout
   requires ticking the terms (`consent_collection`, which needs the terms URL saved in Stripe's
   public details; without it `createCheckout` falls back to no checkbox) and states the auto-renewal
   and 14-day withdrawal. The Clerk webhook (`/api/clerk/webhook`, needs

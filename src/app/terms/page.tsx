@@ -34,7 +34,9 @@ export default function TermsPage() {
         <p>
           Quairy answers yes-or-no, pick-one and rating questions, compares options and answers
           questions about text you paste. Answers come from an AI model (Jev, made by TypeSafe) and
-          show how sure Quairy is.
+          show how sure Quairy is. When you ask Quairy to check the sources, it searches the web
+          and shows what the pages it found say, with excerpts and links. Quairy doesn’t vouch for
+          those pages.
         </p>
         <p>
           Answers are automated judgments. They can be wrong or out of date, and they are not
@@ -55,7 +57,7 @@ export default function TermsPage() {
       <Section title="Free use">
         <p>
           Without Pro, you can make {FREE_DAILY_SEARCHES} searches and {FREE_DAILY_EXTRAS}{" "}
-          comparisons or text questions a day (UTC). Asking the same question again on the same
+          comparisons, text questions or source checks a day (UTC). Asking the same question again on the same
           day is free. We may change these limits.
         </p>
       </Section>

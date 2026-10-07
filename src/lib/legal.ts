@@ -12,5 +12,5 @@ export const OPERATOR = {
 };
 
 /** When the terms or privacy policy last changed in substance. */
-export const TERMS_UPDATED = "October 2, 2026";
-export const PRIVACY_UPDATED = "October 2, 2026";
+export const TERMS_UPDATED = "October 7, 2026";
+export const PRIVACY_UPDATED = "October 7, 2026";

@@ -30,7 +30,10 @@ export default function PrivacyPage() {
         <List>
           <li>
             <strong>Your questions and pasted text.</strong> We send them to TypeSafe so its model
-            can answer. We don’t keep pasted text after answering. Questions appear in the page’s
+            can answer. When you ask Quairy to check the sources, we also send your question to
+            Exa, a web search service, and keep what the pages said for a day under a scrambled
+            fingerprint of the question, so the same check isn’t repeated. We don’t keep pasted
+            text after answering. Questions appear in the page’s
             web address, so they can show up briefly in our hosting provider’s request logs. Why:
             to provide the service you ask for (contract).
           </li>
@@ -93,6 +96,7 @@ export default function PrivacyPage() {
           <li>Stripe: payments and invoices.</li>
           <li>Upstash: the database for limits, history, preferences and subscriptions.</li>
           <li>TypeSafe: producing answers.</li>
+          <li>Exa: web search, when you ask Quairy to check the sources.</li>
         </List>
         <p>
           Some of them process data outside the EEA, including in the United States. Where they

@@ -54,7 +54,7 @@ export function SearchLimit({ limit }: { limit: number }) {
 export function ExtrasLimit({ limit }: { limit: number }) {
   return (
     <LimitCard
-      title={`You’ve used today’s ${limit} free comparisons and text questions`}
+      title={`You’ve used today’s ${limit} free comparisons, text questions and source checks`}
       description={`They share one daily allowance, which renews at midnight UTC. Ones you already ran today still work, and searches aren’t affected. Quairy Pro${PRO_OPEN ? "" : ", coming soon,"} has no daily limits.`}
     />
   );

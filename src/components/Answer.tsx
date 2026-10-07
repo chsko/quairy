@@ -3,6 +3,7 @@ import { FileSearchIcon, MessageCircleQuestionIcon, SlidersHorizontalIcon } from
 import { ExampleQuestions } from "@/components/ExampleQuestions";
 import { RatingChart } from "@/components/RatingChart";
 import { ShareButton } from "@/components/ShareButton";
+import { SourceCheck } from "@/components/SourceCheck";
 import { NAV_FORWARD } from "@/components/Transitions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,11 +61,14 @@ function Evidence({ grounding }: { grounding: Grounding }) {
 function AnswerCard({
   outcome,
   shareable,
+  q,
   children,
 }: {
   outcome: Extract<Outcome, { kind: SupportedKind }>;
   /** Offer a Share button; answers about a pasted text stay private. */
   shareable: boolean;
+  /** The web search, which can be checked against web sources. */
+  q?: string;
   children: React.ReactNode;
 }) {
   const summary = summarize(outcome)!;
@@ -85,6 +89,7 @@ function AnswerCard({
       <CardContent className="flex flex-col gap-5">
         {children}
         {outcome.grounding && <Evidence grounding={outcome.grounding} />}
+        {q && !outcome.grounding && <SourceCheck q={q} outcome={outcome} />}
       </CardContent>
       <CardFooter className="flex-wrap gap-x-3 gap-y-2 text-xs text-muted-foreground">
         <Badge variant="secondary" title="How sure Quairy is about the kind of question">
@@ -176,15 +181,19 @@ export function Guidance({
 export function Answer({
   outcome,
   mode = "web",
+  q,
   compareHref,
 }: {
   outcome: Outcome;
   /** "text" when answering from a pasted text. */
   mode?: "web" | "text";
+  /** The web search, for "Check the sources". */
+  q?: string;
   /** Where a pick-one answer can be compared in detail. */
   compareHref?: string;
 }) {
   const shareable = mode === "web";
+  const card = { shareable, q: mode === "web" ? q : undefined };
   switch (outcome.kind) {
     case "unsupported":
       return <Guidance reason={outcome.reason} examples={mode === "web"} />;
@@ -192,7 +201,7 @@ export function Answer({
       return <NotInText />;
     case "yes_no":
       return (
-        <AnswerCard outcome={outcome} shareable={shareable}>
+        <AnswerCard outcome={outcome} {...card}>
           <ul className="flex flex-col gap-3">
             <ProbabilityRow label="Yes" probability={outcome.yes} />
             <ProbabilityRow label="No" probability={1 - outcome.yes} />
@@ -201,7 +210,7 @@ export function Answer({
       );
     case "pick_one":
       return (
-        <AnswerCard outcome={outcome} shareable={shareable}>
+        <AnswerCard outcome={outcome} {...card}>
           <ul className="flex flex-col gap-3">
             {outcome.options.map((o) => (
               <ProbabilityRow key={o.label} label={o.label} probability={o.probability} muted={o.none} />
@@ -221,7 +230,7 @@ export function Answer({
       );
     case "rate":
       return (
-        <AnswerCard outcome={outcome} shareable={shareable}>
+        <AnswerCard outcome={outcome} {...card}>
           <RatingChart distribution={outcome.distribution} />
         </AnswerCard>
       );

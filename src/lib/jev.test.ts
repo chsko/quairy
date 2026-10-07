@@ -109,6 +109,26 @@ describe("askJev", () => {
     probabilities: { 0: 0.1, 1: 0.1, 2: 0.2, 3: 0.4, 4: 0.2 },
   };
 
+  it("keeps a known kind and grounds the answer in the given passages", async () => {
+    const outcome = await askJev(
+      fakeClient({
+        kind: kind("unsupported"),
+        yes_no: { type: "noul", noul: 0.9 },
+        rate,
+        answered: { type: "noul", noul: 0.8 },
+        where: { type: "choice", choice: "L001", confidence: 0.7, probabilities: { L000: 0.3, L001: 0.7 } },
+      }),
+      "Can penguins fly?",
+      ["Penguins are birds.", "Penguins cannot fly."],
+      "yes_no",
+    );
+    expect(outcome).toMatchObject({
+      kind: "yes_no",
+      yes: 0.9,
+      grounding: { verdict: "answered", evidence: [{ index: 1 }, { index: 0 }] },
+    });
+  });
+
   it("answers yes/no questions", async () => {
     const outcome = await askJev(
       fakeClient({ kind: kind("yes_no"), yes_no: noulYes, rate }),

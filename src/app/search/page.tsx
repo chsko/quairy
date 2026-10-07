@@ -84,6 +84,8 @@ export default async function SearchPage({ searchParams }: Props) {
         <h1 className="sr-only">Quairy’s answer to “{q}”</h1>
         <Answer
           outcome={outcome}
+          // "Check the sources" needs the web search integration.
+          q={process.env.EXA_API_KEY ? q : undefined}
           compareHref={`/search/compare?${new URLSearchParams({ q })}`}
         />
         {access.remaining !== undefined && access.remaining <= 3 && (
