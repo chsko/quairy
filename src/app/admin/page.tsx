@@ -100,6 +100,12 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const searches = counts?.rows.reduce((sum, r) => sum + r.searches, 0) ?? null;
   const proSearches = counts?.rows.reduce((sum, r) => sum + r.proSearches, 0) ?? 0;
   const bots = counts?.rows.reduce((sum, r) => sum + r.botPreviews, 0) ?? null;
+  const total = (field: "comparisons" | "textQuestions" | "sourceChecks" | "webSearches") =>
+    counts?.rows.reduce((sum, r) => sum + r[field], 0) ?? null;
+  const sourceChecks = total("sourceChecks");
+  const webSearches = total("webSearches");
+  const comparisons = total("comparisons");
+  const textQuestions = total("textQuestions");
   const daysShown = lastDays(days).reverse();
 
   return (
@@ -155,11 +161,21 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile
           label="Searches"
           value={searches === null ? "–" : number.format(searches)}
           detail={searches ? `${percent(proSearches, searches)} by Pro` : undefined}
+        />
+        <Tile
+          label="Source checks"
+          value={sourceChecks === null ? "–" : number.format(sourceChecks)}
+          detail={webSearches === null ? undefined : `${number.format(webSearches)} paid web searches`}
+        />
+        <Tile
+          label="Comparisons"
+          value={comparisons === null ? "–" : number.format(comparisons)}
+          detail={textQuestions === null ? undefined : `${number.format(textQuestions)} text questions`}
         />
         <Tile label="Bot link previews" value={bots === null ? "–" : number.format(bots)} />
         <Tile
@@ -198,6 +214,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 <TableHead className="text-right">Visitors</TableHead>
                 <TableHead className="text-right">Searchers</TableHead>
                 <TableHead className="text-right">Searches</TableHead>
+                <TableHead className="text-right" title="Source checks">Checks</TableHead>
                 <TableHead className="text-right">Bots</TableHead>
                 <TableHead className="text-right">{SIGNUPS_OPEN ? "Sign-ups" : "Waitlist"}</TableHead>
                 <TableHead className="pr-6 text-right">Subscribed</TableHead>
@@ -215,6 +232,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{row?.searchers ?? 0}</TableCell>
                     <TableCell className="text-right tabular-nums">{row?.searches ?? 0}</TableCell>
+                    <TableCell className="text-right tabular-nums">{row?.sourceChecks ?? 0}</TableCell>
                     <TableCell className="text-right tabular-nums">{row?.botPreviews ?? 0}</TableCell>
                     <TableCell className="text-right tabular-nums">
                       {SIGNUPS_OPEN

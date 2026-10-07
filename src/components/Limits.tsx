@@ -50,8 +50,28 @@ export function SearchLimit({ limit }: { limit: number }) {
   );
 }
 
-/** Shown instead of a comparison or a text answer once today's free ones are used. */
-export function ExtrasLimit({ limit }: { limit: number }) {
+/**
+ * Shown instead of a comparison, a text answer or a source check once today's
+ * free ones are used, or once a subscriber reaches Pro's fair-use cap.
+ */
+export function ExtrasLimit({ limit, pro }: { limit: number; pro?: boolean }) {
+  if (pro) {
+    return (
+      <Empty className="border">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <HourglassIcon />
+          </EmptyMedia>
+          <EmptyTitle>You’ve reached today’s fair-use limit</EmptyTitle>
+          <EmptyDescription>
+            Pro includes up to {limit} comparisons, text questions and source checks a day, which
+            renews at midnight UTC. Searches aren’t affected, and ones you already ran today still
+            work.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
   return (
     <LimitCard
       title={`You’ve used today’s ${limit} free comparisons, text questions and source checks`}

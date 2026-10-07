@@ -11,6 +11,7 @@ import {
   type BillingInterval,
   FREE_DAILY_EXTRAS,
   FREE_DAILY_SEARCHES,
+  PRO_DAILY_EXTRAS,
   PRO_MONTHLY_EUR,
   PRO_YEARLY_EUR,
   YEARLY_SAVING_PERCENT,
@@ -151,7 +152,7 @@ export function Plans({
             <Perks
               items={[
                 "Unlimited searches",
-                "Unlimited comparisons, text questions and source checks",
+                `Comparisons, text questions and source checks: up to ${PRO_DAILY_EXTRAS} a day`,
                 "Search history",
                 "Cancel any time",
               ]}

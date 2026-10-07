@@ -49,7 +49,7 @@ export default async function ComparePage({ searchParams }: Props) {
 
   const access = await checkExtra("compare", q);
   if (access.status === "slow_down") return <SlowDown />;
-  if (access.status === "limit") return <ExtrasLimit limit={access.limit} />;
+  if (access.status === "limit") return <ExtrasLimit limit={access.limit} pro={access.pro} />;
 
   let result: CompareResult;
   try {

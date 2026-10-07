@@ -11,8 +11,8 @@ export type SourcesState =
   | { status: "idle" }
   | { status: "checked"; check: SourceCheck }
   | { status: "error"; message: string }
-  /** A free visitor has used today's comparisons, text questions and source checks. */
-  | { status: "limit"; limit: number };
+  /** Today's comparisons, text questions and source checks are used up. */
+  | { status: "limit"; limit: number; pro?: boolean };
 
 const KINDS: readonly string[] = ["yes_no", "pick_one", "rate"] satisfies SupportedKind[];
 
@@ -37,7 +37,7 @@ export async function checkTheSources(
   if (access.status === "slow_down") {
     return { status: "error", message: "That’s a lot of questions at once. Wait a minute, then try again." };
   }
-  if (access.status === "limit") return { status: "limit", limit: access.limit };
+  if (access.status === "limit") return { status: "limit", limit: access.limit, pro: access.pro };
 
   try {
     const check = await checkSources(q, kind as SupportedKind);

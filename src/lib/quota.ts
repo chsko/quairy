@@ -6,15 +6,15 @@ import { userAgent } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { getSubscription, isPro } from "./billing";
-import { FREE_DAILY_EXTRAS, FREE_DAILY_SEARCHES, HISTORY_SIZE } from "./pricing";
+import { FREE_DAILY_EXTRAS, FREE_DAILY_SEARCHES, HISTORY_SIZE, PRO_DAILY_EXTRAS } from "./pricing";
 import { getRedis } from "./redis";
-import { recordBotPreview, recordSearch } from "./stats";
+import { type ExtraKind, recordBotPreview, recordExtra, recordSearch } from "./stats";
 import { isTimeFormat, type TimeFormat } from "./timezone";
 
 export type Access =
   | { status: "ok"; plan: "pro" | "free" | "bot"; remaining?: number }
-  /** A free visitor has used today's allowance. */
-  | { status: "limit"; limit: number }
+  /** A free visitor has used today's allowance, or a subscriber Pro's fair-use cap. */
+  | { status: "limit"; limit: number; pro?: boolean }
   /** Too many requests in a short time, from anyone. */
   | { status: "slow_down" };
 
@@ -64,9 +64,10 @@ type Allowance = {
 
 const SEARCHES: Allowance = { prefix: "quota", limit: FREE_DAILY_SEARCHES };
 const EXTRAS: Allowance = { prefix: "extras", limit: FREE_DAILY_EXTRAS };
+const PRO_EXTRAS: Allowance = { prefix: "extras", limit: PRO_DAILY_EXTRAS };
 
 /**
- * Counts one request against a free visitor's daily allowance. Visitors are
+ * Counts one request against a visitor's daily allowance. Visitors are
  * counted by account when signed in and by IP otherwise; each distinct request
  * id counts once a day, so reloading or repeating it is free.
  */
@@ -74,15 +75,16 @@ async function useAllowance(
   userId: string | null,
   { prefix, limit }: Allowance,
   id: string,
+  plan: "free" | "pro" = "free",
 ): Promise<Access> {
   const redis = getRedis();
   const key = `${prefix}:${userId ? `user:${userId}` : `ip:${await clientIp()}`}:${today()}`;
   const [seen, used] = await Promise.all([redis.sismember(key, id), redis.scard(key)]);
   // Already counted today, so it says nothing new about what's left.
-  if (seen) return { status: "ok", plan: "free" };
-  if (used >= limit) return { status: "limit", limit };
+  if (seen) return { status: "ok", plan };
+  if (used >= limit) return { status: "limit", limit, pro: plan === "pro" };
   await redis.pipeline().sadd(key, id).expire(key, 60 * 60 * 48).exec();
-  return { status: "ok", plan: "free", remaining: limit - used - 1 };
+  return { status: "ok", plan, remaining: limit - used - 1 };
 }
 
 /**
@@ -122,17 +124,20 @@ export const checkSearch = cache(async (q: string): Promise<Access> => {
 });
 
 /**
- * Whether this request may run a comparison or answer a question about a
- * pasted text: the costlier requests, which share their own small daily
- * allowance. `parts` identify the request (the question, and the text), so
- * repeating it is free. Unlimited with Pro.
+ * Whether this request may run a comparison, answer a question about a pasted
+ * text or check a search's sources: the costlier requests, which share their
+ * own small daily allowance. `parts` identify the request (the question, and
+ * the text), so repeating it is free. Pro has a fair-use cap far above it.
+ * Allowed requests are counted for the dashboard.
  */
-export const checkExtra = cache(async (...parts: string[]): Promise<Access> => {
+export const checkExtra = cache(async (kind: ExtraKind, ...parts: string[]): Promise<Access> => {
   if (!(await checkBurst())) return { status: "slow_down" };
   try {
     const { userId } = await auth();
-    if (userId && isPro(await getSubscription(userId))) return { status: "ok", plan: "pro" };
-    return await useAllowance(userId, EXTRAS, hashId(...parts));
+    const pro = !!userId && isPro(await getSubscription(userId));
+    const access = await useAllowance(userId, pro ? PRO_EXTRAS : EXTRAS, hashId(kind, ...parts), pro ? "pro" : "free");
+    if (access.status === "ok") await recordExtra(kind);
+    return access;
   } catch (error) {
     console.error("Quota check failed", error);
     return { status: "ok", plan: "free" };

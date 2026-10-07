@@ -118,7 +118,7 @@ export function SourceCheck({ q, outcome }: { q: string; outcome: Extract<Outcom
     status: "idle",
   });
 
-  if (state.status === "limit") return <ExtrasLimit limit={state.limit} />;
+  if (state.status === "limit") return <ExtrasLimit limit={state.limit} pro={state.pro} />;
 
   return (
     <section aria-label="What web sources say" className="flex flex-col gap-3 border-t pt-4">

@@ -126,7 +126,7 @@ export function TextAsk() {
             </div>
           </ViewTransition>
         ) : state.status === "limit" ? (
-          <ExtrasLimit limit={state.limit} />
+          <ExtrasLimit limit={state.limit} pro={state.pro} />
         ) : state.status === "error" ? (
           <Alert variant="destructive">
             <AlertCircleIcon />

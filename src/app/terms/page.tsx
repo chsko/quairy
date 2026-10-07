@@ -5,6 +5,7 @@ import { TERMS_UPDATED } from "@/lib/legal";
 import {
   FREE_DAILY_EXTRAS,
   FREE_DAILY_SEARCHES,
+  PRO_DAILY_EXTRAS,
   PRO_MONTHLY_EUR,
   PRO_YEARLY_EUR,
 } from "@/lib/pricing";
@@ -67,6 +68,11 @@ export default function TermsPage() {
           <li>
             Quairy Pro costs €{PRO_MONTHLY_EUR} a month or €{PRO_YEARLY_EUR} a year. Prices
             include VAT where it applies. Payments are handled by Stripe.
+          </li>
+          <li>
+            Pro has no daily limit on searches. Comparisons, text questions and source checks
+            are limited to {PRO_DAILY_EXTRAS} a day (UTC), far more than personal use needs, so
+            that the service stays affordable for everyone.
           </li>
           <li>
             You pay in advance for each period. Your subscription renews automatically at the end

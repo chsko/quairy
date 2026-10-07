@@ -5,7 +5,9 @@ import { track } from "@vercel/analytics/server";
 import { getRedis } from "./redis";
 
 // Quairy's own usage numbers for the admin dashboard, kept in Redis per UTC
-// day: how many searches ran, how many link-preview bots asked, and roughly
+// day: how many searches, comparisons, text questions and source checks ran
+// (and how many web searches those checks paid for), how many link-preview
+// bots asked, and roughly
 // how many different people searched (a HyperLogLog, which keeps no ids).
 // Business events also go to Vercel Web Analytics as custom events.
 
@@ -17,13 +19,46 @@ const ENV = process.env.VERCEL_ENV ?? "development";
 const countsKey = (d: string) => `stats:${ENV}:${d}`;
 const searchersKey = (d: string) => `stats:${ENV}:searchers:${d}`;
 
+/** The costlier requests, which share the extras allowance. */
+export type ExtraKind = "compare" | "text" | "sources";
+
 export type DailyCounts = {
   day: string;
   searches: number;
   proSearches: number;
   botPreviews: number;
   searchers: number;
+  comparisons: number;
+  textQuestions: number;
+  sourceChecks: number;
+  /** Source checks that weren't cached, so ran a paid web search. */
+  webSearches: number;
 };
+
+const EXTRA_FIELD: Record<ExtraKind, string> = {
+  compare: "comparisons",
+  text: "textQuestions",
+  sources: "sourceChecks",
+};
+
+async function increment(field: string) {
+  const d = day();
+  try {
+    await getRedis().pipeline().hincrby(countsKey(d), field, 1).expire(countsKey(d), DAY_TTL).exec();
+  } catch (error) {
+    console.error(`Couldn't record ${field}`, error);
+  }
+}
+
+/** Counts an allowed comparison, text question or source check. */
+export async function recordExtra(kind: ExtraKind) {
+  await increment(EXTRA_FIELD[kind]);
+}
+
+/** Counts a web search that a source check paid for (not served from the cache). */
+export async function recordWebSearch() {
+  await increment("webSearches");
+}
 
 /** Counts a search that ran for a person, and who (by an anonymous id) ran it. */
 export async function recordSearch(visitor: string, plan: "free" | "pro") {
@@ -44,12 +79,7 @@ export async function recordSearch(visitor: string, plan: "free" | "pro") {
 
 /** Counts a link-preview bot fetching a search page. */
 export async function recordBotPreview() {
-  const d = day();
-  try {
-    await getRedis().pipeline().hincrby(countsKey(d), "botPreviews", 1).expire(countsKey(d), DAY_TTL).exec();
-  } catch (error) {
-    console.error("Couldn't record bot stats", error);
-  }
+  await increment("botPreviews");
 }
 
 /** The last `days` days of counts, oldest first, plus distinct searchers across them all. */
@@ -70,6 +100,10 @@ export async function getDailyCounts(days: number) {
       searches: Number(counts.searches ?? 0),
       proSearches: Number(counts.proSearches ?? 0),
       botPreviews: Number(counts.botPreviews ?? 0),
+      comparisons: Number(counts.comparisons ?? 0),
+      textQuestions: Number(counts.textQuestions ?? 0),
+      sourceChecks: Number(counts.sourceChecks ?? 0),
+      webSearches: Number(counts.webSearches ?? 0),
       searchers: Number(results[i * 2 + 1] ?? 0),
     };
   });

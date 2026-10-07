@@ -96,7 +96,9 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
   (`checkExtra`; repeating the same comparison or question on the same text is free).
   Every Jev entry point (search, `/card`, `/text`, Compare) passes `checkBurst` (30/min per IP).
 - Pro (`src/lib/pricing.ts`, €4/month or €30/year, one Stripe product with a price per interval,
-  chosen with native radios on the Pro card that submit with the subscribe form): unlimited searches, comparisons and text questions, and search history (Redis sorted set
+  chosen with native radios on the Pro card that submit with the subscribe form): unlimited searches,
+  a fair-use cap of `PRO_DAILY_EXTRAS` (200) comparisons, text questions and source checks a day
+  (stated on the Pro card and in the terms), and search history (Redis sorted set
   per user, shown in the time zone and 12/24-hour clock picked under Settings › Preferences,
   `timezone:<user>` and `timeformat:<user>` in Redis, each defaulting to and saving the browser's). Stripe Checkout + customer portal (`src/lib/billing.ts`, `src/app/pro`); the price
   is found or created by lookup key. `syncSubscription` copies the latest subscription into
@@ -131,7 +133,8 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
   `trackEvent` (`src/lib/stats.ts`, sent in `after()`): `Search` (plan), `Signup` (Clerk
   `user.created`), `Subscribe`, `Cancel`, `Resume`, `Subscription ended` (from changes seen in
   `syncSubscription`). Redis keeps daily counts (`stats:<VERCEL_ENV>:<day>`: searches, proSearches,
-  botPreviews) and a HyperLogLog of anonymous searcher ids (`stats:<VERCEL_ENV>:searchers:<day>`),
+  botPreviews, and per extra kind: comparisons, textQuestions, sourceChecks, plus webSearches for
+  uncached source checks, which are what Exa bills) and a HyperLogLog of anonymous searcher ids (`stats:<VERCEL_ENV>:searchers:<day>`),
   120 days, per environment because Redis is shared. Dashboard subscriptions only count users of
   the deployment's own Clerk instance, since the Stripe sandbox is shared too. The owner's
   dashboard `/admin` (404 unless the user's Clerk public metadata has `role: "admin"`, set in the

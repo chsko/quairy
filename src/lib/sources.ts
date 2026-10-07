@@ -4,6 +4,7 @@ import Exa from "exa-js";
 import { getJevClient } from "./client";
 import { askJev, type Outcome, type SupportedKind } from "./jev";
 import { getRedis } from "./redis";
+import { recordWebSearch } from "./stats";
 
 // "Check the sources": a web search (Exa) finds pages about the question, and
 // Jev answers again from their excerpts alone, pointing at the excerpt that
@@ -97,6 +98,7 @@ export async function checkSources(query: string, kind: SupportedKind): Promise<
   }
 
   const { sources, passages, passageSources } = await findSources(query);
+  await recordWebSearch();
   const outcome = passages.length > 0 ? await askJev(getJevClient(), query, passages, kind) : null;
   const check: SourceCheck = { sources, passageSources, outcome };
 

@@ -10,8 +10,8 @@ export type TextAskState =
   | { status: "idle" }
   | { status: "answered"; id: number; outcome: Outcome }
   | { status: "error"; id: number; message: string }
-  /** A free visitor has used today's comparisons and text questions. */
-  | { status: "limit"; id: number; limit: number };
+  /** Today's comparisons, text questions and source checks are used up. */
+  | { status: "limit"; id: number; limit: number; pro?: boolean };
 
 /** Answers a question from a pasted text only, with the passage that answers it. */
 export async function askAboutText(
@@ -43,7 +43,7 @@ export async function askAboutText(
   if (access.status === "slow_down") {
     return { status: "error", id, message: "That’s a lot of questions at once. Wait a minute, then try again." };
   }
-  if (access.status === "limit") return { status: "limit", id, limit: access.limit };
+  if (access.status === "limit") return { status: "limit", id, limit: access.limit, pro: access.pro };
 
   try {
     const outcome = await askJev(getJevClient(), question, toPassages(text));
