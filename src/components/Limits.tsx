@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { PRO_OPEN } from "@/lib/launch";
 import { PRO_PRICE_LABEL } from "@/lib/pricing";
 
 function UpgradeButton() {
@@ -16,7 +17,7 @@ function UpgradeButton() {
     <Button asChild className="rounded-full">
       <Link href="/pro">
         <SparklesIcon data-icon="inline-start" />
-        Go unlimited with Pro for {PRO_PRICE_LABEL}
+        {PRO_OPEN ? `Go unlimited with Pro for ${PRO_PRICE_LABEL}` : "Unlimited Pro is coming soon"}
       </Link>
     </Button>
   );
@@ -44,7 +45,7 @@ export function SearchLimit({ limit }: { limit: number }) {
   return (
     <LimitCard
       title={`You’ve used today’s ${limit} free searches`}
-      description="New free searches arrive at midnight UTC. Questions you already asked today still work. Quairy Pro has no daily limit and keeps your search history."
+      description={`New free searches arrive at midnight UTC. Questions you already asked today still work. Quairy Pro${PRO_OPEN ? "" : ", coming soon,"} has no daily limit and keeps your search history.`}
     />
   );
 }
@@ -54,7 +55,7 @@ export function ExtrasLimit({ limit }: { limit: number }) {
   return (
     <LimitCard
       title={`You’ve used today’s ${limit} free comparisons and text questions`}
-      description="They share one daily allowance, which renews at midnight UTC. Ones you already ran today still work, and searches aren’t affected. Quairy Pro has no daily limits."
+      description={`They share one daily allowance, which renews at midnight UTC. Ones you already ran today still work, and searches aren’t affected. Quairy Pro${PRO_OPEN ? "" : ", coming soon,"} has no daily limits.`}
     />
   );
 }
@@ -82,7 +83,7 @@ export function FreeSearchesLeft({ remaining }: { remaining: number }) {
         ? "That was your last free search today."
         : `${remaining} free ${remaining === 1 ? "search" : "searches"} left today.`}{" "}
       <Link href="/pro" className="font-medium text-foreground underline-offset-4 hover:underline">
-        Go unlimited with Pro
+        {PRO_OPEN ? "Go unlimited with Pro" : "Unlimited Pro is coming soon"}
       </Link>
     </p>
   );

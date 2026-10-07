@@ -13,6 +13,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { getSubscription, isPro } from "@/lib/billing";
+import { PRO_OPEN } from "@/lib/launch";
 import { getHistory, getTimePreferences } from "@/lib/quota";
 import { clearSearchHistory } from "./actions";
 import { RememberTimePreferences, SearchTime } from "@/components/TimePreferences";
@@ -39,8 +40,8 @@ export default async function HistoryPage() {
   if (!userId || !isPro(await getSubscription(userId))) {
     return (
       <Notice
-        title="Search history is part of Pro"
-        description="With Quairy Pro, every question you ask is kept here so you can open it again."
+        title={PRO_OPEN ? "Search history is part of Pro" : "Search history is coming with Pro"}
+        description={`With Quairy Pro${PRO_OPEN ? "" : ", coming soon"}, every question you ask is kept here so you can open it again.`}
         action={
           <Button asChild className="rounded-full">
             <Link href="/pro">

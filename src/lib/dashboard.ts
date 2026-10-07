@@ -98,6 +98,30 @@ export async function getSignups(days: number): Promise<Signups> {
   return { total, inRange: recent.data.length, byDay };
 }
 
+export type Waitlist = { total: number; inRange: number; byDay: Record<string, number> };
+
+/** People on Clerk's waitlist: everyone, and those who joined in the range. */
+export async function getWaitlist(days: number): Promise<Waitlist> {
+  const since = Date.parse(lastDays(days)[0]);
+  const clerk = await clerkClient();
+  const byDay: Record<string, number> = {};
+  let inRange = 0;
+  let total = 0;
+  for (let offset = 0; ; offset += 500) {
+    const page = await clerk.waitlistEntries.list({ orderBy: "-created_at", limit: 500, offset });
+    total = page.totalCount;
+    for (const entry of page.data) {
+      if (entry.createdAt < since) continue;
+      inRange++;
+      const d = new Date(entry.createdAt).toISOString().slice(0, 10);
+      byDay[d] = (byDay[d] ?? 0) + 1;
+    }
+    const oldest = page.data.at(-1)?.createdAt ?? 0;
+    if (page.data.length < 500 || oldest < since) break;
+  }
+  return { total, inRange, byDay };
+}
+
 export type Subscriptions = {
   active: number;
   monthly: number;

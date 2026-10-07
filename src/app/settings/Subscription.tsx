@@ -11,6 +11,7 @@ import {
   PRO_YEARLY_EUR,
   YEARLY_SAVING_PERCENT,
 } from "@/lib/pricing";
+import { PRO_OPEN } from "@/lib/launch";
 import { resumeSubscription, switchInterval, updateCard } from "./actions";
 import { CancelButton } from "./CancelButton";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -42,7 +43,7 @@ function FreePlan({ ended }: { ended: boolean }) {
       <Button asChild className="w-fit rounded-full">
         <Link href="/pro">
           <SparklesIcon data-icon="inline-start" />
-          {ended ? "Subscribe again" : "See Quairy Pro"}
+          {!PRO_OPEN ? "Pro is coming soon" : ended ? "Subscribe again" : "See Quairy Pro"}
         </Link>
       </Button>
     </div>

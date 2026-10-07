@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getSubscription, isPro, type Subscription } from "@/lib/billing";
+import { PRO_OPEN } from "@/lib/launch";
 import { subscribe } from "./actions";
 import { Plans, SUBSCRIBE_FORM } from "./Plans";
 
@@ -30,7 +31,9 @@ export default async function ProPage() {
 
   return (
     <Plans
-      badge={pro && <Badge>Your plan</Badge>}
+      badge={
+        pro ? <Badge>Your plan</Badge> : !PRO_OPEN && <Badge variant="secondary">Coming soon</Badge>
+      }
       period={pro ? (subscription!.interval ?? "month") : undefined}
       footer={
         pro ? (
@@ -40,6 +43,15 @@ export default async function ProPage() {
             </Button>
             <p className="text-center text-xs text-muted-foreground">
               <Renewal subscription={subscription!} />
+            </p>
+          </>
+        ) : !PRO_OPEN ? (
+          <>
+            <Button asChild className="w-full rounded-full">
+              <Link href="/waitlist">Get notified when Pro opens</Link>
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              Pro isn’t available yet. Join the waitlist and we’ll email you when it opens.
             </p>
           </>
         ) : (

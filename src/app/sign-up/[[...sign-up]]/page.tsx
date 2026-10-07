@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { SignUp } from "@clerk/nextjs";
 import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
+import { SIGNUPS_OPEN } from "@/lib/launch";
 
 export const metadata: Metadata = { title: "Create your account – Quairy" };
 
@@ -12,6 +14,7 @@ export function generateStaticParams() {
 
 // Quairy's own sign-up page, in the Quarry theme, instead of Clerk's hosted one.
 export default function SignUpPage() {
+  if (!SIGNUPS_OPEN) redirect("/waitlist");
   return (
     <AuthPage
       prefetch="/sign-in"

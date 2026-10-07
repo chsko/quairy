@@ -50,6 +50,11 @@ export default function PrivacyPage() {
             account (contract).
           </li>
           <li>
+            <strong>The waitlist.</strong> If you join it, your email address, handled by Clerk, so
+            we can tell you when accounts and Quairy Pro open. We keep it until then, or until you
+            ask us to remove it. Why: you asked us to (consent).
+          </li>
+          <li>
             <strong>Payments.</strong> Stripe processes your card and billing details; we never
             see your full card number. We keep your Stripe customer ID and your subscription’s
             status, plan and dates. Why: to provide Pro (contract) and keep accounting records

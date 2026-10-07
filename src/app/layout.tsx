@@ -6,6 +6,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Separator } from "@/components/ui/separator";
 import { Analytics } from "@vercel/analytics/next";
+import { JOIN_URL } from "@/lib/launch";
 import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -50,7 +51,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           // border shade; use the card colour so fields don't look disabled.
           appearance={{ theme: shadcn, variables: { colorInput: "var(--card)" } }}
           signInUrl="/sign-in"
-          signUpUrl="/sign-up"
+          signUpUrl={JOIN_URL}
+          waitlistUrl="/waitlist"
         >
         <a
           href="#main"

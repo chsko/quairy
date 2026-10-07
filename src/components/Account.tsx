@@ -6,10 +6,12 @@ import { ClerkLoading, Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { HistoryIcon, SparklesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SIGNUPS_OPEN } from "@/lib/launch";
 import { cn } from "@/lib/utils";
 
 /**
- * Sign-in, or the account menu with history, plus a link to Quairy Pro.
+ * Sign-in (or, while sign-ups are closed, the waitlist), or the account menu
+ * with history, plus a link to Quairy Pro.
  * Render one per page: it morphs between pages like the logo (name `account`).
  */
 export function Account({ className }: { className?: string }) {
@@ -26,11 +28,18 @@ export function Account({ className }: { className?: string }) {
           <AccountSkeleton />
         </ClerkLoading>
         <Show when="signed-out">
-          <SignInButton mode="modal">
-            <Button variant="outline" size="sm" className="rounded-full">
-              Sign in
+          {SIGNUPS_OPEN ? (
+            <SignInButton mode="modal">
+              <Button variant="outline" size="sm" className="rounded-full">
+                Sign in
+              </Button>
+            </SignInButton>
+          ) : (
+            // Accounts aren't open yet; existing ones sign in at /sign-in.
+            <Button asChild variant="outline" size="sm" className="rounded-full">
+              <Link href="/waitlist">Join waitlist</Link>
             </Button>
-          </SignInButton>
+          )}
         </Show>
         <Show when="signed-in">
           <Button asChild variant="ghost" size="sm">
@@ -75,7 +84,7 @@ function AccountSkeleton() {
           <Skeleton className="size-7 rounded-full" />
         </>
       ) : (
-        <Skeleton className="h-8 w-[4.5rem] rounded-full" />
+        <Skeleton className={cn("h-8 rounded-full", SIGNUPS_OPEN ? "w-[4.5rem]" : "w-[6.75rem]")} />
       )}
     </div>
   );

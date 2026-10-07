@@ -71,6 +71,14 @@ docs at https://docs.typesafe.ai/llms.txt before writing integration code.
 
 ## Free and Pro
 
+- Launch switches (`src/lib/launch.ts`): `SIGNUPS_OPEN` and `PRO_OPEN` are both off while Quairy
+  gauges interest. Sign-up goes to a Clerk `<Waitlist>` at `/waitlist` (`JOIN_URL`; `/sign-up`
+  redirects there in `next.config.ts`; Clerk's sign-up mode must be "Waitlist" so Clerk refuses
+  sign-ups too), the header says "Join waitlist" instead of "Sign in" (existing accounts use
+  `/sign-in`), Pro shows "Coming soon" with a waitlist button, `subscribe` refuses to start
+  checkout, and the limit cards say Pro is coming soon. `/admin` counts waitlist joins
+  (`getWaitlist`). To launch: flip the switches and Clerk's sign-up mode.
+
 - Free: `FREE_DAILY_SEARCHES` (10) distinct web searches a day (UTC), counted in Upstash Redis
   per Clerk user or, signed out, per IP (`checkSearch` in `src/lib/quota.ts`, React `cache`d so
   page and metadata count once; repeats of a question are free; link-preview bots aren't

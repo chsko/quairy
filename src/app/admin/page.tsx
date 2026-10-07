@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getSignups, getSubscriptions, getVisits, lastDays } from "@/lib/dashboard";
+import { getSignups, getSubscriptions, getVisits, getWaitlist, lastDays } from "@/lib/dashboard";
+import { SIGNUPS_OPEN } from "@/lib/launch";
 import { getDailyCounts } from "@/lib/stats";
 
 export const metadata: Metadata = { title: "Dashboard – Quairy", robots: { index: false } };
@@ -83,16 +84,19 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const requested = Number((await searchParams).days);
   const days = (RANGES as readonly number[]).includes(requested) ? requested : 7;
 
-  const [visitsResult, countsResult, signupsResult, subsResult] = await Promise.allSettled([
-    getVisits(days),
-    getDailyCounts(days),
-    getSignups(days),
-    getSubscriptions(days),
-  ]);
+  const [visitsResult, countsResult, signupsResult, subsResult, waitlistResult] =
+    await Promise.allSettled([
+      getVisits(days),
+      getDailyCounts(days),
+      getSignups(days),
+      getSubscriptions(days),
+      getWaitlist(days),
+    ]);
   const visits = value(visitsResult, "Vercel Web Analytics");
   const counts = value(countsResult, "Redis stats");
   const signups = value(signupsResult, "Clerk");
   const subs = value(subsResult, "Stripe");
+  const waitlist = value(waitlistResult, "Clerk waitlist");
   const searches = counts?.rows.reduce((sum, r) => sum + r.searches, 0) ?? null;
   const proSearches = counts?.rows.reduce((sum, r) => sum + r.proSearches, 0) ?? 0;
   const bots = counts?.rows.reduce((sum, r) => sum + r.botPreviews, 0) ?? null;
@@ -133,8 +137,19 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 value: counts?.searchers ?? null,
                 note: "Different people (by account, or IP when signed out) who ran at least one search.",
               },
-              { label: "Sign-ups", value: signups?.inRange ?? null },
-              { label: "New subscribers", value: subs?.newInRange ?? null },
+              // While accounts and Pro are closed, the waitlist is the interest signal.
+              ...(SIGNUPS_OPEN
+                ? [
+                    { label: "Sign-ups", value: signups?.inRange ?? null },
+                    { label: "New subscribers", value: subs?.newInRange ?? null },
+                  ]
+                : [
+                    {
+                      label: "Joined the waitlist",
+                      value: waitlist?.inRange ?? null,
+                      note: waitlist ? `${number.format(waitlist.total)} on the waitlist in total.` : undefined,
+                    },
+                  ]),
             ]}
           />
         </CardContent>
@@ -184,7 +199,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 <TableHead className="text-right">Searchers</TableHead>
                 <TableHead className="text-right">Searches</TableHead>
                 <TableHead className="text-right">Bots</TableHead>
-                <TableHead className="text-right">Sign-ups</TableHead>
+                <TableHead className="text-right">{SIGNUPS_OPEN ? "Sign-ups" : "Waitlist"}</TableHead>
                 <TableHead className="pr-6 text-right">Subscribed</TableHead>
               </TableRow>
             </TableHeader>
@@ -202,7 +217,13 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                     <TableCell className="text-right tabular-nums">{row?.searches ?? 0}</TableCell>
                     <TableCell className="text-right tabular-nums">{row?.botPreviews ?? 0}</TableCell>
                     <TableCell className="text-right tabular-nums">
-                      {signups ? (signups.byDay[d] ?? 0) : "–"}
+                      {SIGNUPS_OPEN
+                        ? signups
+                          ? (signups.byDay[d] ?? 0)
+                          : "–"
+                        : waitlist
+                          ? (waitlist.byDay[d] ?? 0)
+                          : "–"}
                     </TableCell>
                     <TableCell className="pr-6 text-right tabular-nums">
                       {newSubs > 0 ? <Badge>{newSubs}</Badge> : subs ? 0 : "–"}
