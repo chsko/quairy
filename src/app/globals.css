@@ -98,11 +98,6 @@
   }
 }
 
-/* Sign-in and sign-up: the skeleton gives way once Clerk's card has mounted. */
-.auth-slot:has(.cl-rootBox) .auth-skeleton {
-  display: none;
-}
-
 /* View transitions for searching. The logo and search box morph between the
    home page and the results header; page content sinks out and rises in,
    following the search box upwards; answers rise in when they arrive. */

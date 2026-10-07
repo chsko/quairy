@@ -2,6 +2,7 @@
 
 import { UserProfile } from "@clerk/nextjs";
 import { CreditCardIcon, SlidersHorizontalIcon } from "lucide-react";
+import { SettingsSkeleton } from "./SettingsSkeleton";
 
 /**
  * Clerk's account and security pages, with Quairy's own subscription and
@@ -16,6 +17,7 @@ export function Profile({
 }) {
   return (
     <UserProfile
+      fallback={<SettingsSkeleton />}
       path="/settings"
       routing="path"
       // Clerk's own styles outrank utility classes, so size it with style objects:

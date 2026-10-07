@@ -1,5 +1,9 @@
-import { AuthPage } from "@/components/AuthPage";
+import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 
 export default function Loading() {
-  return <AuthPage label="Loading sign in…" />;
+  return (
+    <AuthPage>
+      <AuthCardSkeleton label="Loading sign in…" />
+    </AuthPage>
+  );
 }

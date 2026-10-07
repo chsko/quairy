@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignUp } from "@clerk/nextjs";
-import { AuthPage } from "@/components/AuthPage";
+import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 
 export const metadata: Metadata = { title: "Create your account – Quairy" };
 
@@ -14,7 +14,6 @@ export function generateStaticParams() {
 export default function SignUpPage() {
   return (
     <AuthPage
-      label="Loading sign up…"
       prefetch="/sign-in"
       footnote={
         <>
@@ -30,7 +29,7 @@ export default function SignUpPage() {
         </>
       }
     >
-      <SignUp />
+      <SignUp fallback={<AuthCardSkeleton label="Loading sign up…" />} />
     </AuthPage>
   );
 }

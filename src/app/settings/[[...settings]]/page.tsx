@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getBillingDetails } from "@/lib/billing";
 import { getTimePreferences } from "@/lib/quota";
 import { Profile } from "../Profile";
-import { SettingsSkeleton } from "../SettingsSkeleton";
 import { SubscriptionSettings } from "../Subscription";
 
 export const metadata: Metadata = { title: "Settings – Quairy" };
@@ -44,29 +43,24 @@ export default async function SettingsPage() {
   const { timeZone, timeFormat } = await getTimePreferences(userId);
 
   return (
-    <div className="auth-slot grid w-full">
-      <SettingsSkeleton className="auth-skeleton col-start-1 row-start-1" />
-      <div className="col-start-1 row-start-1 min-w-0">
-        <Profile
-          subscription={
-            <>
-              <PageTitle>Subscription</PageTitle>
-              <Suspense fallback={<SubscriptionSkeleton />}>
-                <SubscriptionTab userId={userId} timeZone={timeZone ?? "UTC"} />
-              </Suspense>
-            </>
-          }
-          preferences={
-            <>
-              <PageTitle>Preferences</PageTitle>
-              <FieldGroup>
-                <TimeZonePicker saved={timeZone} />
-                <TimeFormatPicker saved={timeFormat} />
-              </FieldGroup>
-            </>
-          }
-        />
-      </div>
-    </div>
+    <Profile
+      subscription={
+        <>
+          <PageTitle>Subscription</PageTitle>
+          <Suspense fallback={<SubscriptionSkeleton />}>
+            <SubscriptionTab userId={userId} timeZone={timeZone ?? "UTC"} />
+          </Suspense>
+        </>
+      }
+      preferences={
+        <>
+          <PageTitle>Preferences</PageTitle>
+          <FieldGroup>
+            <TimeZonePicker saved={timeZone} />
+            <TimeFormatPicker saved={timeFormat} />
+          </FieldGroup>
+        </>
+      }
+    />
   );
 }

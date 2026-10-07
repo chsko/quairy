@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Holds the dashboard's place: while the page loads, and until Clerk's
- * profile card mounts (`.auth-slot:has(.cl-rootBox)` in globals.css hides it).
+ * Holds the dashboard's place: while the page loads (`loading.tsx`), and as
+ * Clerk's `fallback` until its profile card mounts.
  */
 export function SettingsSkeleton({ className }: { className?: string }) {
   return (

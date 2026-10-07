@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
-import { AuthPage } from "@/components/AuthPage";
+import { AuthCardSkeleton, AuthPage } from "@/components/AuthPage";
 
 export const metadata: Metadata = { title: "Sign in – Quairy" };
 
@@ -12,8 +12,8 @@ export function generateStaticParams() {
 // Quairy's own sign-in page, in the Quarry theme, instead of Clerk's hosted one.
 export default function SignInPage() {
   return (
-    <AuthPage label="Loading sign in…" prefetch="/sign-up">
-      <SignIn />
+    <AuthPage prefetch="/sign-up">
+      <SignIn fallback={<AuthCardSkeleton label="Loading sign in…" />} />
     </AuthPage>
   );
 }
