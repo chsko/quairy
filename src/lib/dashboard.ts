@@ -1,5 +1,6 @@
 import "server-only";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import type Stripe from "stripe";
 import { getStripe } from "./billing";
 import { PRO_MONTHLY_EUR, PRO_YEARLY_EUR } from "./pricing";
 
@@ -110,7 +111,24 @@ export type Subscriptions = {
   endedInRange: number;
 };
 
-/** Subscription counts and revenue from Stripe. */
+/**
+ * Which of these Clerk user ids belong to the Clerk instance this deployment
+ * uses. Until production has its own Stripe account, the Stripe sandbox also
+ * holds subscriptions made from preview and local runs, whose users live in
+ * Clerk's development instance; they're left out this way.
+ */
+async function usersOfThisInstance(ids: (string | undefined)[]) {
+  const unique = [...new Set(ids.filter((id): id is string => !!id))];
+  const clerk = await clerkClient();
+  const found = new Set<string>();
+  for (let i = 0; i < unique.length; i += 100) {
+    const { data } = await clerk.users.getUserList({ userId: unique.slice(i, i + 100), limit: 100 });
+    for (const user of data) found.add(user.id);
+  }
+  return found;
+}
+
+/** Subscription counts and revenue from Stripe, for this Clerk instance's users. */
 export async function getSubscriptions(days: number): Promise<Subscriptions> {
   const stripe = getStripe();
   const since = Math.floor(Date.parse(lastDays(days)[0]) / 1000);
@@ -124,7 +142,11 @@ export async function getSubscriptions(days: number): Promise<Subscriptions> {
     newByDay: {},
     endedInRange: 0,
   };
-  for await (const sub of stripe.subscriptions.list({ status: "all", limit: 100 })) {
+  const all: Stripe.Subscription[] = [];
+  for await (const sub of stripe.subscriptions.list({ status: "all", limit: 100 })) all.push(sub);
+  const ours = await usersOfThisInstance(all.map((sub) => sub.metadata.userId));
+  for (const sub of all) {
+    if (!ours.has(sub.metadata.userId)) continue;
     const live = ["active", "trialing", "past_due"].includes(sub.status);
     const yearly = sub.items.data[0]?.price.recurring?.interval === "year";
     if (live) {

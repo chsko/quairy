@@ -11,8 +11,11 @@ import { getRedis } from "./redis";
 
 const DAY_TTL = 60 * 60 * 24 * 120;
 const day = (date = new Date()) => date.toISOString().slice(0, 10);
-const countsKey = (d: string) => `stats:${d}`;
-const searchersKey = (d: string) => `stats:searchers:${d}`;
+// Kept apart per environment: preview and local runs share the Redis database
+// with production, and their test searches mustn't count in its numbers.
+const ENV = process.env.VERCEL_ENV ?? "development";
+const countsKey = (d: string) => `stats:${ENV}:${d}`;
+const searchersKey = (d: string) => `stats:${ENV}:searchers:${d}`;
 
 export type DailyCounts = {
   day: string;
