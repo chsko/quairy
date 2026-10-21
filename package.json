@@ -30,7 +30,7 @@
     "recharts": "3.10.1",
     "server-only": "^0.0.1",
     "shadcn": "^4.21.4",
-    "stripe": "^22.6.2",
+    "stripe": "^23.0.0",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
